@@ -23,11 +23,11 @@ const PrescriptionForm: React.FC<PrescriptionFormProps> = ({ onDataChange, onPri
       sexo: 'M',
     },
     medicamento: {
-      nome: '',
-      dosagem: '',
+      nome: 'Mounjaro (Tirzepatida)',
+      dosagem: '2,5mg/0,5mL - Solução Injetável',
       quantidade: 1,
       quantidadeExtenso: 'um',
-      posologia: '',
+      posologia: 'Aplicar 0,5mL (uma dose) por via subcutânea, uma vez por semana (mesmo dia de cada semana).',
     },
     data: new Date().toISOString().split('T')[0],
   });
