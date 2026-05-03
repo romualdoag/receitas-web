@@ -10,16 +10,16 @@ interface PrescriptionFormProps {
 const PrescriptionForm: React.FC<PrescriptionFormProps> = ({ onDataChange, onPrint }) => {
   const [formData, setFormData] = useState({
     prescritor: {
-      nome: 'Dra. Aline Thebit Bortolon',
-      registro: 'CRM 12040',
-      uf: 'ES',
-      endereco: 'Rua Gastao Roubach, 36. Sala 502B. Praia da Costa. Vila Velha-ES. CEP 29101-020',
-      telefone: '(27) 99836-5808',
+      nome: '',
+      registro: '',
+      uf: '',
+      endereco: '',
+      telefone: '',
     },
     paciente: {
-      nome: 'Romualdo Alcantara Geraldi',
-      endereco: 'Rua Comissário Octávio Queiroz, 994, Vitória - ES',
-      idade: '35 anos (27/10/1990)',
+      nome: '',
+      endereco: '',
+      idade: '',
       sexo: 'M',
     },
     medicamento: {
