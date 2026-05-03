@@ -109,6 +109,7 @@ const PrescriptionForm: React.FC<PrescriptionFormProps> = ({ onDataChange, onPri
     paciente: {
       nome: '',
       endereco: '',
+      cpf: '',
       idade: '',
       sexo: 'M',
     },
@@ -253,6 +254,13 @@ const PrescriptionForm: React.FC<PrescriptionFormProps> = ({ onDataChange, onPri
                 className="w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-400 outline-none"
                 value={formData.paciente.nome}
                 onChange={(e) => handlePrescritorPacienteChange('paciente', 'nome', e.target.value)}
+              />
+              <input
+                type="text"
+                placeholder="CPF (opcional)"
+                className="w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-400 outline-none"
+                value={formData.paciente.cpf}
+                onChange={(e) => handlePrescritorPacienteChange('paciente', 'cpf', e.target.value)}
               />
               <input
                 type="text"

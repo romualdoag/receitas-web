@@ -19,6 +19,7 @@ interface PrescriptionData {
   paciente: {
     nome: string;
     endereco: string;
+    cpf?: string;
     idade?: string;
     sexo?: string;
   };
@@ -51,13 +52,11 @@ const PrescriptionDocument: React.FC<PrescriptionDocumentProps> = ({ data }) => 
         <p className="text-xs font-black mb-1 uppercase tracking-tighter">Paciente:</p>
         <p className="font-bold text-lg uppercase">{data.paciente.nome || '_____________________________________________________'}</p>
         <p className="text-sm uppercase mt-1">{data.paciente.endereco || '_____________________________________________________'}</p>
-        {(data.paciente.idade || data.paciente.sexo) && (
-          <p className="text-sm uppercase mt-1 font-semibold">
-            {data.paciente.idade && `Idade: ${data.paciente.idade}`} 
-            {data.paciente.idade && data.paciente.sexo && ' | '}
-            {data.paciente.sexo && `Sexo: ${data.paciente.sexo}`}
-          </p>
-        )}
+        <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1 font-semibold text-sm uppercase">
+          {data.paciente.cpf && <span>CPF: {data.paciente.cpf}</span>}
+          {data.paciente.idade && <span>Idade: {data.paciente.idade}</span>}
+          {data.paciente.sexo && <span>Sexo: {data.paciente.sexo}</span>}
+        </div>
       </div>
 
       {/* Prescrição */}
