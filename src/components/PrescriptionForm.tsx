@@ -10,24 +10,24 @@ interface PrescriptionFormProps {
 const PrescriptionForm: React.FC<PrescriptionFormProps> = ({ onDataChange, onPrint }) => {
   const [formData, setFormData] = useState({
     prescritor: {
-      nome: '',
-      registro: 'CRM',
-      uf: 'SP',
-      endereco: '',
-      telefone: '',
+      nome: 'Dra. Aline Thebit Bortolon',
+      registro: 'CRM 12040',
+      uf: 'ES',
+      endereco: 'Rua Gastao Roubach, 36. Sala 502B. Praia da Costa. Vila Velha-ES. CEP 29101-020',
+      telefone: '(27) 99836-5808',
     },
     paciente: {
-      nome: '',
-      endereco: '',
-      idade: '',
+      nome: 'Romualdo Alcantara Geraldi',
+      endereco: 'Rua Comissário Octávio Queiroz, 994, Vitória - ES',
+      idade: '35 anos (27/10/1990)',
       sexo: 'M',
     },
     medicamento: {
       nome: 'Mounjaro (Tirzepatida)',
-      dosagem: '2,5mg/0,5mL - Solução Injetável',
+      dosagem: '5mg/0,5mL - Solução Injetável (4un de 0,5mL)',
       quantidade: 1,
       quantidadeExtenso: 'um',
-      posologia: 'Aplicar 0,5mL (uma dose) por via subcutânea, uma vez por semana (mesmo dia de cada semana).',
+      posologia: 'Administrar 1 caneta de 5mg, via subcutânea (no abdome, coxa ou braço), 1 vez por semana. Alternar o local de aplicação a cada dose.',
     },
     data: new Date().toISOString().split('T')[0],
   });
