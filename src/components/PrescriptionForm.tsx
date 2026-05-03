@@ -164,9 +164,8 @@ const PrescriptionForm: React.FC<PrescriptionFormProps> = ({ onDataChange, onPri
       setFormData(prev => ({ ...prev, medicamentos: newMedicamentos }));
     }
   };
-
   const addMedication = () => {
-    if (formData.medicamentos.length < 3) {
+    if (formData.medicamentos.length < 2) {
       setFormData(prev => ({
         ...prev,
         medicamentos: [
@@ -295,9 +294,9 @@ const PrescriptionForm: React.FC<PrescriptionFormProps> = ({ onDataChange, onPri
           <div className="flex justify-between items-center border-b pb-2">
             <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
               <Pill className="w-5 h-5 text-purple-500" />
-              Prescrição (Máximo 3 itens)
+              Prescrição (Máximo 2 itens)
             </h2>
-            {formData.medicamentos.length < 3 && (
+            {formData.medicamentos.length < 2 && (
               <button
                 onClick={addMedication}
                 className="flex items-center gap-1 text-sm bg-purple-100 text-purple-700 px-3 py-1 rounded-full hover:bg-purple-200 transition-colors font-bold"
