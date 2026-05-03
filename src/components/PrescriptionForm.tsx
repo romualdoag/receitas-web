@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { User, Clipboard, Pill, Printer, Calendar, Plus, Trash2 } from 'lucide-react';
+import { User, Clipboard, Pill, Printer, Calendar, Plus, Trash2, ListFilter } from 'lucide-react';
 import { numberToWords } from '../utils/numberToWords';
 
 interface Medication {
@@ -9,6 +9,88 @@ interface Medication {
   quantidadeExtenso: string;
   posologia: string;
 }
+
+interface MedicationPreset {
+  label: string;
+  nome: string;
+  dosagem: string;
+  posologia: string;
+}
+
+const MEDICATION_PRESETS: MedicationPreset[] = [
+  {
+    label: 'Mounjaro 2,5mg',
+    nome: 'Mounjaro (Tirzepatida)',
+    dosagem: '2,5mg/0,5mL - Solução Injetável (4un de 0,5mL)',
+    posologia: 'Administrar 1 caneta de 2,5mg, via subcutânea (no abdome, coxa ou braço), 1 vez por semana. Alternar o local de aplicação a cada dose.'
+  },
+  {
+    label: 'Mounjaro 5mg',
+    nome: 'Mounjaro (Tirzepatida)',
+    dosagem: '5mg/0,5mL - Solução Injetável (4un de 0,5mL)',
+    posologia: 'Administrar 1 caneta de 5mg, via subcutânea (no abdome, coxa ou braço), 1 vez por semana. Alternar o local de aplicação a cada dose.'
+  },
+  {
+    label: 'Mounjaro 7,5mg',
+    nome: 'Mounjaro (Tirzepatida)',
+    dosagem: '7,5mg/0,5mL - Solução Injetável (4un de 0,5mL)',
+    posologia: 'Administrar 1 caneta de 7,5mg, via subcutânea (no abdome, coxa ou braço), 1 vez por semana. Alternar o local de aplicação a cada dose.'
+  },
+  {
+    label: 'Mounjaro 10mg',
+    nome: 'Mounjaro (Tirzepatida)',
+    dosagem: '10mg/0,5mL - Solução Injetável (4un de 0,5mL)',
+    posologia: 'Administrar 1 caneta de 10mg, via subcutânea (no abdome, coxa ou braço), 1 vez por semana. Alternar o local de aplicação a cada dose.'
+  },
+  {
+    label: 'Ozempic 0,25mg',
+    nome: 'Ozempic (Semaglutida)',
+    dosagem: '0,25mg - Sistema de aplicação com 1 caneta e 4 agulhas',
+    posologia: 'Administrar 0,25mg por via subcutânea, uma vez por semana, por 4 semanas.'
+  },
+  {
+    label: 'Ozempic 0,5mg',
+    nome: 'Ozempic (Semaglutida)',
+    dosagem: '0,5mg - Sistema de aplicação com 1 caneta e 4 agulhas',
+    posologia: 'Administrar 0,5mg por via subcutânea, uma vez por semana, por 4 semanas.'
+  },
+  {
+    label: 'Ozempic 1mg',
+    nome: 'Ozempic (Semaglutida)',
+    dosagem: '1,0mg - Sistema de aplicação com 1 caneta e 4 agulhas',
+    posologia: 'Administrar 1,0mg por via subcutânea, uma vez por semana, por 4 semanas.'
+  },
+  {
+    label: 'Wegovy 0,25mg',
+    nome: 'Wegovy (Semaglutida)',
+    dosagem: '0,25mg/0,5mL - Solução Injetável',
+    posologia: 'Administrar 0,25mg por via subcutânea, uma vez por semana, conforme esquema de escalonamento de dose.'
+  },
+  {
+    label: 'Wegovy 0,5mg',
+    nome: 'Wegovy (Semaglutida)',
+    dosagem: '0,5mg/0,5mL - Solução Injetável',
+    posologia: 'Administrar 0,5mg por via subcutânea, uma vez por semana, conforme esquema de escalonamento de dose.'
+  },
+  {
+    label: 'Wegovy 1mg',
+    nome: 'Wegovy (Semaglutida)',
+    dosagem: '1,0mg/0,5mL - Solução Injetável',
+    posologia: 'Administrar 1,0mg por via subcutânea, uma vez por semana, conforme esquema de escalonamento de dose.'
+  },
+  {
+    label: 'Wegovy 1,7mg',
+    nome: 'Wegovy (Semaglutida)',
+    dosagem: '1,7mg/0,75mL - Solução Injetável',
+    posologia: 'Administrar 1,7mg por via subcutânea, uma vez por semana, conforme esquema de escalonamento de dose.'
+  },
+  {
+    label: 'Wegovy 2,4mg',
+    nome: 'Wegovy (Semaglutida)',
+    dosagem: '2,4mg/0,75mL - Solução Injetável',
+    posologia: 'Administrar 2,4mg por via subcutânea, uma vez por semana (dose de manutenção).'
+  }
+];
 
 interface PrescriptionFormProps {
   onDataChange: (data: any) => void;
@@ -65,6 +147,21 @@ const PrescriptionForm: React.FC<PrescriptionFormProps> = ({ onDataChange, onPri
     }
 
     setFormData(prev => ({ ...prev, medicamentos: newMedicamentos }));
+  };
+
+  const applyPreset = (index: number, presetLabel: string) => {
+    if (!presetLabel) return;
+    const preset = MEDICATION_PRESETS.find(p => p.label === presetLabel);
+    if (preset) {
+      const newMedicamentos = [...formData.medicamentos];
+      newMedicamentos[index] = {
+        ...newMedicamentos[index],
+        nome: preset.nome,
+        dosagem: preset.dosagem,
+        posologia: preset.posologia
+      };
+      setFormData(prev => ({ ...prev, medicamentos: newMedicamentos }));
+    }
   };
 
   const addMedication = () => {
@@ -206,33 +303,47 @@ const PrescriptionForm: React.FC<PrescriptionFormProps> = ({ onDataChange, onPri
           <div className="space-y-8">
             {formData.medicamentos.map((med, index) => (
               <div key={index} className="relative bg-gray-50 p-6 rounded-xl border border-gray-200 group">
-                {formData.medicamentos.length > 1 && (
-                  <button
-                    onClick={() => removeMedication(index)}
-                    className="absolute top-4 right-4 text-gray-400 hover:text-red-500 transition-colors"
-                    title="Remover medicamento"
-                  >
-                    <Trash2 className="w-5 h-5" />
-                  </button>
-                )}
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2">
+                <div className="flex justify-between items-start mb-4">
+                   <div className="flex items-center gap-2">
                       <span className="bg-purple-600 text-white w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">
                         {index + 1}
                       </span>
-                      <input
-                        type="text"
-                        placeholder="Nome do Medicamento (DCB)"
-                        className="w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-400 outline-none font-bold"
-                        value={med.nome}
-                        onChange={(e) => handleMedicationChange(index, 'nome', e.target.value)}
-                      />
+                      <div className="flex items-center gap-2 bg-white border rounded-lg px-3 py-1 text-sm text-gray-600">
+                        <ListFilter className="w-4 h-4 text-gray-400" />
+                        <select 
+                          className="outline-none bg-transparent font-medium"
+                          onChange={(e) => applyPreset(index, e.target.value)}
+                          defaultValue=""
+                        >
+                          <option value="" disabled>Sugestões de Medicamentos...</option>
+                          {MEDICATION_PRESETS.map(p => <option key={p.label} value={p.label}>{p.label}</option>)}
+                        </select>
+                      </div>
                     </div>
+                    {formData.medicamentos.length > 1 && (
+                      <button
+                        onClick={() => removeMedication(index)}
+                        className="text-gray-400 hover:text-red-500 transition-colors"
+                        title="Remover medicamento"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    )}
+                </div>
+                
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="space-y-3">
+                    <input
+                      type="text"
+                      placeholder="Nome do Medicamento (DCB)"
+                      className="w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-400 outline-none font-bold bg-white"
+                      value={med.nome}
+                      onChange={(e) => handleMedicationChange(index, 'nome', e.target.value)}
+                    />
                     <input
                       type="text"
                       placeholder="Dosagem / Forma Farmacêutica"
-                      className="w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-400 outline-none"
+                      className="w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-400 outline-none bg-white"
                       value={med.dosagem}
                       onChange={(e) => handleMedicationChange(index, 'dosagem', e.target.value)}
                     />
@@ -241,7 +352,7 @@ const PrescriptionForm: React.FC<PrescriptionFormProps> = ({ onDataChange, onPri
                       <input
                         type="number"
                         min={1}
-                        className="w-20 px-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-400 outline-none"
+                        className="w-20 px-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-400 outline-none bg-white"
                         value={med.quantidade}
                         onChange={(e) => handleMedicationChange(index, 'quantidade', e.target.value)}
                       />
