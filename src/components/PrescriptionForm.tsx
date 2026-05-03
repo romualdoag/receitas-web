@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { User, Clipboard, Pill, Printer, Calendar } from 'lucide-react';
+import { User, Clipboard, Pill, Printer, Calendar, Plus, Trash2 } from 'lucide-react';
 import { numberToWords } from '../utils/numberToWords';
+
+interface Medication {
+  nome: string;
+  dosagem: string;
+  quantidade: number;
+  quantidadeExtenso: string;
+  posologia: string;
+}
 
 interface PrescriptionFormProps {
   onDataChange: (data: any) => void;
@@ -22,13 +30,15 @@ const PrescriptionForm: React.FC<PrescriptionFormProps> = ({ onDataChange, onPri
       idade: '',
       sexo: 'M',
     },
-    medicamento: {
-      nome: 'Mounjaro (Tirzepatida)',
-      dosagem: '5mg/0,5mL - Solução Injetável (4un de 0,5mL)',
-      quantidade: 1,
-      quantidadeExtenso: 'um',
-      posologia: 'Administrar 1 caneta de 5mg, via subcutânea (no abdome, coxa ou braço), 1 vez por semana. Alternar o local de aplicação a cada dose.',
-    },
+    medicamentos: [
+      {
+        nome: 'Mounjaro (Tirzepatida)',
+        dosagem: '5mg/0,5mL - Solução Injetável (4un de 0,5mL)',
+        quantidade: 1,
+        quantidadeExtenso: 'um',
+        posologia: 'Administrar 1 caneta de 5mg, via subcutânea (no abdome, coxa ou braço), 1 vez por semana. Alternar o local de aplicação a cada dose.',
+      }
+    ] as Medication[],
     data: new Date().toISOString().split('T')[0],
   });
 
@@ -36,22 +46,44 @@ const PrescriptionForm: React.FC<PrescriptionFormProps> = ({ onDataChange, onPri
     onDataChange(formData);
   }, [formData, onDataChange]);
 
-  const handleChange = (section: string, field: string, value: any) => {
-    setFormData((prev) => {
-      const newData = {
+  const handlePrescritorPacienteChange = (section: string, field: string, value: any) => {
+    setFormData((prev) => ({
+      ...prev,
+      [section]: {
+        ...prev[section as keyof typeof prev] as any,
+        [field]: value,
+      },
+    }));
+  };
+
+  const handleMedicationChange = (index: number, field: keyof Medication, value: any) => {
+    const newMedicamentos = [...formData.medicamentos];
+    (newMedicamentos[index] as any)[field] = value;
+
+    if (field === 'quantidade') {
+      newMedicamentos[index].quantidadeExtenso = numberToWords(Number(value));
+    }
+
+    setFormData(prev => ({ ...prev, medicamentos: newMedicamentos }));
+  };
+
+  const addMedication = () => {
+    if (formData.medicamentos.length < 3) {
+      setFormData(prev => ({
         ...prev,
-        [section]: {
-          ...prev[section as keyof typeof prev] as any,
-          [field]: value,
-        },
-      };
+        medicamentos: [
+          ...prev.medicamentos,
+          { nome: '', dosagem: '', quantidade: 1, quantidadeExtenso: 'um', posologia: '' }
+        ]
+      }));
+    }
+  };
 
-      if (section === 'medicamento' && field === 'quantidade') {
-        newData.medicamento.quantidadeExtenso = numberToWords(Number(value));
-      }
-
-      return newData;
-    });
+  const removeMedication = (index: number) => {
+    if (formData.medicamentos.length > 1) {
+      const newMedicamentos = formData.medicamentos.filter((_, i) => i !== index);
+      setFormData(prev => ({ ...prev, medicamentos: newMedicamentos }));
+    }
   };
 
   return (
@@ -75,7 +107,7 @@ const PrescriptionForm: React.FC<PrescriptionFormProps> = ({ onDataChange, onPri
                 placeholder="Nome Completo"
                 className="w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-400 outline-none"
                 value={formData.prescritor.nome}
-                onChange={(e) => handleChange('prescritor', 'nome', e.target.value)}
+                onChange={(e) => handlePrescritorPacienteChange('prescritor', 'nome', e.target.value)}
               />
               <div className="flex gap-2">
                 <input
@@ -83,7 +115,7 @@ const PrescriptionForm: React.FC<PrescriptionFormProps> = ({ onDataChange, onPri
                   placeholder="Registro (ex: CRM 12345)"
                   className="w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-400 outline-none"
                   value={formData.prescritor.registro}
-                  onChange={(e) => handleChange('prescritor', 'registro', e.target.value)}
+                  onChange={(e) => handlePrescritorPacienteChange('prescritor', 'registro', e.target.value)}
                 />
                 <input
                   type="text"
@@ -91,7 +123,7 @@ const PrescriptionForm: React.FC<PrescriptionFormProps> = ({ onDataChange, onPri
                   className="w-20 px-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-400 outline-none uppercase"
                   maxLength={2}
                   value={formData.prescritor.uf}
-                  onChange={(e) => handleChange('prescritor', 'uf', e.target.value.toUpperCase())}
+                  onChange={(e) => handlePrescritorPacienteChange('prescritor', 'uf', e.target.value.toUpperCase())}
                 />
               </div>
               <input
@@ -99,14 +131,14 @@ const PrescriptionForm: React.FC<PrescriptionFormProps> = ({ onDataChange, onPri
                 placeholder="Endereço Completo do Consultório"
                 className="w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-400 outline-none"
                 value={formData.prescritor.endereco}
-                onChange={(e) => handleChange('prescritor', 'endereco', e.target.value)}
+                onChange={(e) => handlePrescritorPacienteChange('prescritor', 'endereco', e.target.value)}
               />
               <input
                 type="text"
                 placeholder="Telefone"
                 className="w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-400 outline-none"
                 value={formData.prescritor.telefone}
-                onChange={(e) => handleChange('prescritor', 'telefone', e.target.value)}
+                onChange={(e) => handlePrescritorPacienteChange('prescritor', 'telefone', e.target.value)}
               />
             </div>
           </section>
@@ -123,14 +155,14 @@ const PrescriptionForm: React.FC<PrescriptionFormProps> = ({ onDataChange, onPri
                 placeholder="Nome Completo do Paciente"
                 className="w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-400 outline-none"
                 value={formData.paciente.nome}
-                onChange={(e) => handleChange('paciente', 'nome', e.target.value)}
+                onChange={(e) => handlePrescritorPacienteChange('paciente', 'nome', e.target.value)}
               />
               <input
                 type="text"
                 placeholder="Endereço Residencial"
                 className="w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-400 outline-none"
                 value={formData.paciente.endereco}
-                onChange={(e) => handleChange('paciente', 'endereco', e.target.value)}
+                onChange={(e) => handlePrescritorPacienteChange('paciente', 'endereco', e.target.value)}
               />
               <div className="flex gap-2">
                 <input
@@ -138,12 +170,12 @@ const PrescriptionForm: React.FC<PrescriptionFormProps> = ({ onDataChange, onPri
                   placeholder="Idade (opcional)"
                   className="w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-400 outline-none"
                   value={formData.paciente.idade}
-                  onChange={(e) => handleChange('paciente', 'idade', e.target.value)}
+                  onChange={(e) => handlePrescritorPacienteChange('paciente', 'idade', e.target.value)}
                 />
                 <select
                   className="w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-400 outline-none"
                   value={formData.paciente.sexo}
-                  onChange={(e) => handleChange('paciente', 'sexo', e.target.value)}
+                  onChange={(e) => handlePrescritorPacienteChange('paciente', 'sexo', e.target.value)}
                 >
                   <option value="M">Masculino</option>
                   <option value="F">Feminino</option>
@@ -153,46 +185,78 @@ const PrescriptionForm: React.FC<PrescriptionFormProps> = ({ onDataChange, onPri
           </section>
         </div>
 
-        {/* Medicamento */}
-        <section className="mt-8 space-y-4">
-          <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2 border-b pb-2">
-            <Pill className="w-5 h-5 text-purple-500" />
-            Prescrição
-          </h2>
-          <div className="grid md:grid-cols-2 gap-4">
-            <div className="space-y-3">
-              <input
-                type="text"
-                placeholder="Nome do Medicamento (DCB)"
-                className="w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-400 outline-none font-bold"
-                value={formData.medicamento.nome}
-                onChange={(e) => handleChange('medicamento', 'nome', e.target.value)}
-              />
-              <input
-                type="text"
-                placeholder="Dosagem / Forma Farmacêutica"
-                className="w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-400 outline-none"
-                value={formData.medicamento.dosagem}
-                onChange={(e) => handleChange('medicamento', 'dosagem', e.target.value)}
-              />
-              <div className="flex items-center gap-2">
-                <label className="text-sm font-semibold text-gray-600">Qtd:</label>
-                <input
-                  type="number"
-                  min={1}
-                  className="w-20 px-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-400 outline-none"
-                  value={formData.medicamento.quantidade}
-                  onChange={(e) => handleChange('medicamento', 'quantidade', e.target.value)}
-                />
-                <span className="text-sm text-gray-500 italic">({formData.medicamento.quantidadeExtenso})</span>
+        {/* Medicamentos */}
+        <section className="mt-8 space-y-6">
+          <div className="flex justify-between items-center border-b pb-2">
+            <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+              <Pill className="w-5 h-5 text-purple-500" />
+              Prescrição (Máximo 3 itens)
+            </h2>
+            {formData.medicamentos.length < 3 && (
+              <button
+                onClick={addMedication}
+                className="flex items-center gap-1 text-sm bg-purple-100 text-purple-700 px-3 py-1 rounded-full hover:bg-purple-200 transition-colors font-bold"
+              >
+                <Plus className="w-4 h-4" />
+                Adicionar Item
+              </button>
+            )}
+          </div>
+
+          <div className="space-y-8">
+            {formData.medicamentos.map((med, index) => (
+              <div key={index} className="relative bg-gray-50 p-6 rounded-xl border border-gray-200 group">
+                {formData.medicamentos.length > 1 && (
+                  <button
+                    onClick={() => removeMedication(index)}
+                    className="absolute top-4 right-4 text-gray-400 hover:text-red-500 transition-colors"
+                    title="Remover medicamento"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </button>
+                )}
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <span className="bg-purple-600 text-white w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">
+                        {index + 1}
+                      </span>
+                      <input
+                        type="text"
+                        placeholder="Nome do Medicamento (DCB)"
+                        className="w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-400 outline-none font-bold"
+                        value={med.nome}
+                        onChange={(e) => handleMedicationChange(index, 'nome', e.target.value)}
+                      />
+                    </div>
+                    <input
+                      type="text"
+                      placeholder="Dosagem / Forma Farmacêutica"
+                      className="w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-400 outline-none"
+                      value={med.dosagem}
+                      onChange={(e) => handleMedicationChange(index, 'dosagem', e.target.value)}
+                    />
+                    <div className="flex items-center gap-2">
+                      <label className="text-sm font-semibold text-gray-600">Qtd:</label>
+                      <input
+                        type="number"
+                        min={1}
+                        className="w-20 px-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-400 outline-none"
+                        value={med.quantidade}
+                        onChange={(e) => handleMedicationChange(index, 'quantidade', e.target.value)}
+                      />
+                      <span className="text-sm text-gray-500 italic">({med.quantidadeExtenso})</span>
+                    </div>
+                  </div>
+                  <textarea
+                    placeholder="Posologia (Instruções de uso)"
+                    className="w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-400 outline-none h-32 resize-none bg-white"
+                    value={med.posologia}
+                    onChange={(e) => handleMedicationChange(index, 'posologia', e.target.value)}
+                  />
+                </div>
               </div>
-            </div>
-            <textarea
-              placeholder="Posologia (Instruções de uso)"
-              className="w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-400 outline-none h-32 resize-none"
-              value={formData.medicamento.posologia}
-              onChange={(e) => handleChange('medicamento', 'posologia', e.target.value)}
-            />
+            ))}
           </div>
         </section>
 
@@ -203,7 +267,7 @@ const PrescriptionForm: React.FC<PrescriptionFormProps> = ({ onDataChange, onPri
               type="date"
               className="outline-none"
               value={formData.data}
-              onChange={(e) => handleChange('', 'data', e.target.value)}
+              onChange={(e) => setFormData(prev => ({ ...prev, data: e.target.value }))}
             />
           </div>
           <button

@@ -1,5 +1,13 @@
 import React from 'react';
 
+interface Medication {
+  nome: string;
+  dosagem: string;
+  quantidade: number;
+  quantidadeExtenso: string;
+  posologia: string;
+}
+
 interface PrescriptionData {
   prescritor: {
     nome: string;
@@ -14,13 +22,7 @@ interface PrescriptionData {
     idade?: string;
     sexo?: string;
   };
-  medicamento: {
-    nome: string;
-    dosagem: string;
-    quantidade: number;
-    quantidadeExtenso: string;
-    posologia: string;
-  };
+  medicamentos: Medication[];
   data: string;
 }
 
@@ -37,7 +39,7 @@ const PrescriptionDocument: React.FC<PrescriptionDocumentProps> = ({ data }) => 
       </div>
 
       {/* Identificação do Emitente */}
-      <div className="mb-10 min-h-[100px]">
+      <div className="mb-8 min-h-[80px]">
         <p className="font-bold text-xl uppercase">{data.prescritor.nome || '__________________________________________'}</p>
         <p className="font-semibold">{data.prescritor.registro} {data.prescritor.uf}</p>
         <p className="text-sm">{data.prescritor.endereco}</p>
@@ -45,8 +47,8 @@ const PrescriptionDocument: React.FC<PrescriptionDocumentProps> = ({ data }) => 
       </div>
 
       {/* Identificação do Usuário */}
-      <div className="mb-10 p-4 border-2 border-black rounded-lg">
-        <p className="text-xs font-black mb-2 uppercase tracking-tighter">Paciente:</p>
+      <div className="mb-8 p-4 border-2 border-black rounded-lg">
+        <p className="text-xs font-black mb-1 uppercase tracking-tighter">Paciente:</p>
         <p className="font-bold text-lg uppercase">{data.paciente.nome || '_____________________________________________________'}</p>
         <p className="text-sm uppercase mt-1">{data.paciente.endereco || '_____________________________________________________'}</p>
         {(data.paciente.idade || data.paciente.sexo) && (
@@ -59,23 +61,27 @@ const PrescriptionDocument: React.FC<PrescriptionDocumentProps> = ({ data }) => 
       </div>
 
       {/* Prescrição */}
-      <div className="flex-grow mb-10">
+      <div className="flex-grow mb-8">
         <p className="text-xs font-black mb-4 uppercase tracking-tighter">Prescrição:</p>
-        <div className="ml-2">
-          <p className="font-bold text-xl uppercase underline decoration-2 underline-offset-4">
-            1) {data.medicamento.nome} {data.medicamento.dosagem}
-          </p>
-          <p className="mt-2 font-bold italic text-lg">
-            Quantidade: {data.medicamento.quantidade} ({data.medicamento.quantidadeExtenso})
-          </p>
-          <div className="mt-8 text-lg text-justify leading-relaxed whitespace-pre-wrap font-medium">
-            Uso: {data.medicamento.posologia}
-          </div>
+        <div className="space-y-6">
+          {data.medicamentos.map((med, index) => (
+            <div key={index} className="ml-2">
+              <p className="font-bold text-lg uppercase underline decoration-2 underline-offset-4">
+                {index + 1}) {med.nome} {med.dosagem}
+              </p>
+              <p className="mt-1 font-bold italic text-base">
+                Quantidade: {med.quantidade} ({med.quantidadeExtenso})
+              </p>
+              <div className="mt-2 text-base text-justify leading-snug whitespace-pre-wrap font-medium">
+                Uso: {med.posologia}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
       <div className="mt-auto">
-        <div className="flex justify-between items-end mb-12">
+        <div className="flex justify-between items-end mb-10">
           <div className="pb-2">
             <p className="text-base font-bold">
               {data.prescritor.endereco.split(',')[1]?.trim() || 'Cidade'}, {new Date(data.data).toLocaleDateString('pt-BR')}
