@@ -8,8 +8,14 @@ export interface Address {
   uf: string;
 }
 
+/** Conselho profissional habilitado a emitir receita de controle especial. */
+export type Conselho = 'CRM' | 'CRO';
+
 export interface Prescritor {
   nome: string;
+  /** Conselho: CRM (médico) ou CRO (dentista). */
+  conselho: Conselho;
+  /** Número de inscrição no conselho. */
   registro: string;
   /** UF do conselho profissional (ex.: CRM SP). Distinto do UF do endereço. */
   uf: string;

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { UserCog, Stethoscope, Pill, Printer, Calendar, Plus, Trash2, ListFilter } from 'lucide-react';
 import { numberToWords } from '../utils/numberToWords';
 import { MEDICATION_PRESETS } from '../data/medicationPresets';
+import { UFS } from '../data/ufs';
 import { emptyAddress } from '../types';
 import type { Medication, PrescriptionData, Prescritor, Paciente, Address } from '../types';
 import AddressFields from './AddressFields';
@@ -20,6 +21,7 @@ const field =
 const initialData: PrescriptionData = {
   prescritor: {
     nome: '',
+    conselho: 'CRM',
     registro: '',
     uf: '',
     endereco: emptyAddress(),
@@ -148,22 +150,50 @@ const PrescriptionForm: React.FC<PrescriptionFormProps> = ({ onDataChange, onPri
               value={formData.prescritor.nome}
               onChange={(e) => setPrescritor('nome', e.target.value)}
             />
-            <div className="flex gap-2">
-              <input
-                type="text"
-                placeholder="Registro (ex.: CRM 12345)"
-                className={`${field} font-mono`}
-                value={formData.prescritor.registro}
-                onChange={(e) => setPrescritor('registro', e.target.value)}
-              />
-              <input
-                type="text"
-                placeholder="UF"
-                maxLength={2}
-                className={`${field} w-20 shrink-0 uppercase`}
-                value={formData.prescritor.uf}
-                onChange={(e) => setPrescritor('uf', e.target.value.toUpperCase())}
-              />
+            <div className="grid grid-cols-[auto_1fr_auto] gap-2">
+              <div>
+                <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-ink-soft">
+                  Conselho
+                </label>
+                <select
+                  className={field}
+                  value={formData.prescritor.conselho}
+                  onChange={(e) => setPrescritor('conselho', e.target.value as Prescritor['conselho'])}
+                >
+                  <option value="CRM">CRM (Médico)</option>
+                  <option value="CRO">CRO (Dentista)</option>
+                </select>
+              </div>
+              <div>
+                <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-ink-soft">
+                  Registro
+                </label>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  placeholder="Número"
+                  className={`${field} font-mono`}
+                  value={formData.prescritor.registro}
+                  onChange={(e) => setPrescritor('registro', e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-ink-soft">
+                  UF
+                </label>
+                <select
+                  className={`${field} w-24`}
+                  value={formData.prescritor.uf}
+                  onChange={(e) => setPrescritor('uf', e.target.value)}
+                >
+                  <option value="">--</option>
+                  {UFS.map((uf) => (
+                    <option key={uf.sigla} value={uf.sigla}>
+                      {uf.sigla}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
             <input
               type="text"

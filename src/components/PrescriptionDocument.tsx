@@ -39,7 +39,12 @@ const PrescriptionDocument: React.FC<PrescriptionDocumentProps> = ({ data }) => 
           {data.prescritor.nome || LINE}
         </p>
         <p className="font-mono text-sm font-semibold">
-          {data.prescritor.registro} {data.prescritor.uf}
+          {[
+            [data.prescritor.conselho, data.prescritor.uf].filter(Boolean).join('/'),
+            data.prescritor.registro,
+          ]
+            .filter(Boolean)
+            .join(' ')}
         </p>
         {enderecoPrescritor && <p className="text-sm leading-snug">{enderecoPrescritor}</p>}
         {data.prescritor.telefone && (
