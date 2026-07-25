@@ -1,11 +1,12 @@
 import { useState, useCallback } from 'react';
 import PrescriptionForm from './components/PrescriptionForm';
 import PrescriptionDocument from './components/PrescriptionDocument';
+import type { PrescriptionData } from './types';
 
 function App() {
-  const [prescriptionData, setPrescriptionData] = useState<any>(null);
+  const [prescriptionData, setPrescriptionData] = useState<PrescriptionData | null>(null);
 
-  const handleDataChange = useCallback((data: any) => {
+  const handleDataChange = useCallback((data: PrescriptionData) => {
     setPrescriptionData(data);
   }, []);
 

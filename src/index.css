@@ -1,12 +1,26 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --font-sans: 'Inter', system-ui, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', monospace;
+
+  /* Clinical palette */
+  --color-ink: #12332b;        /* deep pine ink — headings, document text */
+  --color-ink-soft: #3f5a52;
+  --color-teal: #0e7c6b;       /* medical teal — primary accent */
+  --color-teal-dark: #0a5c50;
+  --color-teal-tint: #e6f2ef;
+  --color-paper: #f7faf9;      /* cool near-white app background */
+  --color-line: #d6e0dc;       /* hairline borders */
+  --color-rx-red: #b23a3a;     /* controle especial marker, used sparingly */
 }
 
 @layer base {
   body {
-    @apply bg-gray-50 text-gray-900;
+    @apply text-ink;
+    background-color: var(--color-paper);
+    font-family: var(--font-sans);
   }
 }
 
@@ -15,7 +29,13 @@
     size: A4;
     margin: 0;
   }
+  html,
   body {
-    background-color: white !important;
+    background: #ffffff !important;
+  }
+  /* Preserve borders/fills of the legal document when printing. */
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 }
